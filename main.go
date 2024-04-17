@@ -32,7 +32,7 @@ func run() int {
 
 	if isDebug {
 		defer func(start time.Time) {
-			printDebug(fmt.Sprintf("[debug] time: %d mcs", time.Since(start).Microseconds()))
+			printDebug(fmt.Sprintf("[debug] time: %d μs", time.Since(start).Microseconds()))
 		}(time.Now())
 	}
 
