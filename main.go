@@ -29,6 +29,7 @@ func run() int {
 	}
 
 	isDebug := envParam("ZSH_PLUGINS_OH_MY_ALIASES_DEBUG", "0") == "1"
+	expandAlias := envParam("ZSH_PLUGINS_OH_MY_ALIASES_EXPAND_ALIAS", "0") == "1"
 
 	if isDebug {
 		defer func(start time.Time) {
@@ -45,9 +46,18 @@ func run() int {
 
 	cmd := os.Args[1]
 
-	alias, ok := findAlias(cmd, parseAliases(rows))
+	aliases, viceVersa := parseAliases(rows)
+
+	alias, ok := find(cmd, aliases)
 	if ok {
 		printInfo(fmt.Sprintf("alias found: %s", alias))
+	} else {
+		if expandAlias {
+			cmd, ok := find(cmd, viceVersa)
+			if ok {
+				printInfo(fmt.Sprintf("run command: %s", cmd))
+			}
+		}
 	}
 
 	return exitSuccess

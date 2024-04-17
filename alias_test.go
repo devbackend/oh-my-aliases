@@ -56,7 +56,7 @@ func TestFindAlias(t *testing.T) {
 	}
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			actual, ok := findAlias(tc.cmd, tc.aliases)
+			actual, ok := find(tc.cmd, tc.aliases)
 			if len(tc.expectedAlias) == 0 {
 				require.False(t, ok)
 				return
@@ -70,32 +70,41 @@ func TestFindAlias(t *testing.T) {
 
 func TestParseAlias(t *testing.T) {
 	testCases := map[string]struct {
-		rows     []string
-		expected map[string]string
+		rows              []string
+		expected          map[string]string
+		expectedViceVersa map[string]string
 	}{
 		"empty rows": {
-			rows:     nil,
-			expected: nil,
+			rows:              nil,
+			expected:          nil,
+			expectedViceVersa: nil,
 		},
 		"list": {
-			expected: map[string]string{
-				"rmdir":                        "rd",
-				"ls -lah":                      "l",
-				"mkdir -p":                     "md",
-				"git commit --verbose --amend": "gc!",
-			},
 			rows: []string{
 				"rd=rmdir",
 				"l='ls -lah'",
 				"'md'=mkdir -p",
 				"'gc!'='git commit --verbose --amend'",
 			},
+			expected: map[string]string{
+				"rmdir":                        "rd",
+				"ls -lah":                      "l",
+				"mkdir -p":                     "md",
+				"git commit --verbose --amend": "gc!",
+			},
+			expectedViceVersa: map[string]string{
+				"rd":  "rmdir",
+				"l":   "ls -lah",
+				"md":  "mkdir -p",
+				"gc!": "git commit --verbose --amend",
+			},
 		},
 	}
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			actual := parseAliases(tc.rows)
+			actual, viceVersa := parseAliases(tc.rows)
 			require.Equal(t, tc.expected, actual)
+			require.Equal(t, tc.expectedViceVersa, viceVersa)
 		})
 	}
 }

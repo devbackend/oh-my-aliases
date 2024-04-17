@@ -5,12 +5,13 @@ import (
 	"strings"
 )
 
-func parseAliases(rows []string) map[string]string {
+func parseAliases(rows []string) (map[string]string, map[string]string) {
 	if len(rows) == 0 {
-		return nil
+		return nil, nil
 	}
 
 	res := make(map[string]string, len(rows))
+	viceVersa := make(map[string]string, len(rows))
 
 	for _, row := range rows {
 		parts := strings.Split(row, "=")
@@ -19,31 +20,34 @@ func parseAliases(rows []string) map[string]string {
 			continue
 		}
 
-		res[extract(parts[1])] = extract(parts[0])
+		alias, command := extract(parts[0]), extract(parts[1])
+
+		res[command] = extract(alias)
+		viceVersa[alias] = extract(command)
 	}
 
-	return res
+	return res, viceVersa
 }
 
-func findAlias(cmd string, aliases map[string]string) (alias string, found bool) {
+func find(cmd string, list map[string]string) (value string, found bool) {
 	cmd = strings.TrimSpace(cmd)
 
-	if len(cmd) == 0 || len(aliases) == 0 {
+	if len(cmd) == 0 || len(list) == 0 {
 		return
 	}
 
-	alias, found = aliases[cmd]
+	value, found = list[cmd]
 	if !found {
 		var args string
 
 		args, rest := pop(strings.Split(cmd, " "))
 
-		alias, found = findAlias(strings.Join(rest, " "), aliases)
+		value, found = find(strings.Join(rest, " "), list)
 		if !found {
 			return
 		}
 
-		alias = fmt.Sprintf("%s %s", alias, args)
+		value = fmt.Sprintf("%s %s", value, args)
 
 		return
 	}
