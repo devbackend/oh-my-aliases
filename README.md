@@ -16,13 +16,16 @@ Go to custom plugins folder:
 cd ${ZSH_CUSTOM1:-$ZSH/custom}/plugins
 ```
 
-Then make git clone for project, compile it and move to any of you bin dirs from $PATH ($GOPATH/bin for example):
+Then make this steps:
 
 ```shell
 git clone https://github.com/devbackend/oh-my-aliases
+
 cd oh-my-aliases
-go build ./...
-mv oh-my-aliases $GOPATH/bin/oh-my-aliases
+
+mkdir $HOME/bin # if not exists
+
+./install.sh
 ```
 
 Then add the plugin to your plugin list in oh-my-zsh configuration:
