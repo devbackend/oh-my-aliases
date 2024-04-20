@@ -11,14 +11,24 @@ const (
 	exitSuccess = 0
 	exitError   = 1
 
-	colorYellow = "\033[0;33m"
-	colorBlue   = "\033[0;34m"
-	colorPurple = "\033[0;95m"
+	colorWarning = "\033[0;33m"
+	colorKey     = "\033[0;32m"
+	colorValue   = "\033[1;32m"
+	colorDebug   = "\033[0;90m"
 
 	colorReset = "\033[0m"
 
 	inputDelimiter = "__oh_my_aliases__DELIMITER"
 )
+
+type keyValMsg struct {
+	key string
+	val string
+}
+
+func (kv keyValMsg) String() string {
+	return fmt.Sprintf("%s%s: %s%s%s", colorKey, kv.key, colorValue, kv.val, colorReset)
+}
 
 func main() {
 	initConfig()
@@ -48,7 +58,7 @@ func run() int {
 
 	alias, ok := find(cmd, aliases)
 	if ok {
-		printInfo(fmt.Sprintf("alias found: %s", alias))
+		printKeyValue("alias found", alias)
 	} else {
 		var expandedCmd string
 		var found bool
@@ -56,14 +66,14 @@ func run() int {
 		if config.expandAlias {
 			expandedCmd, found = find(cmd, viceVersa)
 			if found {
-				printInfo(fmt.Sprintf("run command: %s", expandedCmd))
+				printKeyValue("run command", expandedCmd)
 			}
 		}
 
 		if config.suggestNewAliases && (!found || !config.expandAlias) {
 			res, has := suggest(cmd, uint8(config.suggestionFrequencyPercent), historyRows)
 			if has {
-				printInfo(fmt.Sprintf("suggest new alias: '%s'", res))
+				printKeyValue("suggest new alias", res)
 			}
 		}
 	}
@@ -71,17 +81,22 @@ func run() int {
 	return exitSuccess
 }
 
-func printInfo(msg string) {
-	printMessage(msg, colorPurple)
+func printWarning(msg string) {
+	printMessage(msg, colorWarning)
 }
 
-func printWarning(msg string) {
-	printMessage(msg, colorYellow)
+func printKeyValue(k, v string) {
+	msg := keyValMsg{key: k, val: v}.String()
+	if config.isDebug {
+		msg = fmt.Sprintf("%s %s%s%s", msg, colorDebug, debug.String(), colorReset)
+	}
+
+	_, _ = fmt.Fprintln(os.Stdout, msg)
 }
 
 func printMessage(msg string, color string) {
 	if config.isDebug {
-		msg = fmt.Sprintf("%s %s%s", msg, colorBlue, debug.String())
+		msg = fmt.Sprintf("%s %s%s", msg, colorDebug, debug.String())
 	}
 
 	_, _ = fmt.Fprintln(os.Stdout, fmt.Sprintf("%s%s%s", color, msg, colorReset))
