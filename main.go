@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -19,28 +18,11 @@ const (
 	colorReset = "\033[0m"
 
 	inputDelimiter = "__oh_my_aliases__DELIMITER"
-
-	freqPercent = 10
 )
 
-type debugInfo struct {
-	start         time.Time
-	amountAliases int
-	amountHistory int
-}
-
-func (d debugInfo) String() string {
-	return fmt.Sprintf(
-		"(took: %d μs; aliases: %d; history: %d)",
-		time.Since(d.start).Microseconds(),
-		d.amountAliases,
-		d.amountHistory,
-	)
-}
-
-var debug debugInfo
-
 func main() {
+	initConfig()
+
 	os.Exit(run())
 }
 
@@ -51,9 +33,6 @@ func run() int {
 		printWarning("not found command in aliasRows")
 		return exitError
 	}
-
-	expandAlias := envParam("ZSH_PLUGINS_OH_MY_ALIASES_EXPAND_ALIAS", "0") == "1"
-	suggestAlias := envParam("ZSH_PLUGINS_OH_MY_ALIASES_SUGGEST_ALIAS", "0") == "1"
 
 	scanner := bufio.NewScanner(bufio.NewReader(os.Stdin))
 
@@ -74,15 +53,15 @@ func run() int {
 		var expandedCmd string
 		var found bool
 
-		if expandAlias {
+		if config.expandAlias {
 			expandedCmd, found = find(cmd, viceVersa)
 			if found {
 				printInfo(fmt.Sprintf("run command: %s", expandedCmd))
 			}
 		}
 
-		if suggestAlias && (!found || !expandAlias) {
-			res, has := suggest(cmd, freqPercent, historyRows)
+		if config.suggestNewAliases && (!found || !config.expandAlias) {
+			res, has := suggest(cmd, uint8(config.suggestionFrequencyPercent), historyRows)
 			if has {
 				printInfo(fmt.Sprintf("suggest new alias: '%s'", res))
 			}
@@ -101,35 +80,11 @@ func printWarning(msg string) {
 }
 
 func printMessage(msg string, color string) {
-	isDebug := envParam("ZSH_PLUGINS_OH_MY_ALIASES_DEBUG", "0") == "1"
-	if isDebug {
+	if config.isDebug {
 		msg = fmt.Sprintf("%s %s%s", msg, colorBlue, debug.String())
 	}
 
 	_, _ = fmt.Fprintln(os.Stdout, fmt.Sprintf("%s%s%s", color, msg, colorReset))
-}
-
-func envParam(key string, defaultVal string) string {
-	val := os.Getenv(key)
-	if val == "" {
-		val = defaultVal
-	}
-
-	return val
-}
-
-func envParamInt(key string, defaultVal int64) int64 {
-	val := envParam(key, "")
-	if val == "" {
-		return defaultVal
-	}
-
-	intVal, _ := strconv.ParseInt(val, 10, 64)
-	if intVal <= 0 {
-		return defaultVal
-	}
-
-	return intVal
 }
 
 func readRows(s *bufio.Scanner) []string {
