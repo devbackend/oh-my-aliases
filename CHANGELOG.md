@@ -1,6 +1,9 @@
 # Change Log
 
 ## [nightly-20240420]
+- improve alias parsing for several commands
+
+## [nightly-20240420]
 - add suggestion for new aliases from frequently called commands
 
 ## [nightly-20240417]
