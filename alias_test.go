@@ -53,6 +53,21 @@ func TestFindAlias(t *testing.T) {
 				"go run": "gor",
 			},
 		},
+		"several commands: both aliases": {
+			cmd:           "go test ./... && go run main.go",
+			expectedAlias: "got ./... && gor main.go",
+			aliases: map[string]string{
+				"go run":  "gor",
+				"go test": "got",
+			},
+		},
+		"several commands: one alias": {
+			cmd:           "go test ./... && go run main.go",
+			expectedAlias: "got ./... && go run main.go",
+			aliases: map[string]string{
+				"go test": "got",
+			},
+		},
 	}
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {

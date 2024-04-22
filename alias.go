@@ -36,6 +36,23 @@ func find(cmd string, list map[string]string) (value string, found bool) {
 		return
 	}
 
+	parts := strings.Split(cmd, "&&")
+	if len(parts) > 1 {
+		res := make([]string, len(parts))
+		for i := range parts {
+			parts[i] = strings.TrimSpace(parts[i])
+
+			a, f := find(parts[i], list)
+			if f {
+				found = true
+				res[i] = a
+			} else {
+				res[i] = parts[i]
+			}
+		}
+		return strings.Join(res, " && "), found
+	}
+
 	value, found = list[cmd]
 	if !found {
 		var args string
