@@ -49,9 +49,6 @@ func run() int {
 	aliasRows := readRows(scanner)
 	historyRows := readRows(scanner)
 
-	debug.amountAliases = len(aliasRows)
-	debug.amountHistory = len(historyRows)
-
 	cmd := os.Args[1]
 
 	aliases, viceVersa := parseAliases(aliasRows)

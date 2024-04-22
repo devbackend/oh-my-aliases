@@ -6,17 +6,13 @@ import (
 )
 
 type debugInfo struct {
-	start         time.Time
-	amountAliases int
-	amountHistory int
+	start time.Time
 }
 
 func (d debugInfo) String() string {
 	return fmt.Sprintf(
-		"(took: %d μs; aliases: %d; history: %d)",
+		"(took: %d μs)",
 		time.Since(d.start).Microseconds(),
-		d.amountAliases,
-		d.amountHistory,
 	)
 }
 
