@@ -22,12 +22,6 @@ Then make this steps:
 
 ```shell
 git clone https://github.com/devbackend/oh-my-aliases
-
-cd oh-my-aliases
-
-mkdir $HOME/bin # if not exists
-
-./install.sh
 ```
 
 Then add the plugin to your plugin list in oh-my-zsh configuration:

@@ -1,5 +1,8 @@
 # Change Log
 
+## [nightly-20240707]
+- rewrite plugin to python
+
 ## [nightly-20240420]
 - improve alias parsing for several commands
 
