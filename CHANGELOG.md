@@ -1,5 +1,9 @@
 # Change Log
 
+## [nightly-2024-0720]
+- fixed bug with parsing alias that has "="
+- improve output for debugging
+
 ## [nightly-20240707]
 - rewrite plugin to python
 
