@@ -3,10 +3,10 @@ def parse_aliases(rows):
 
     for row in rows:
         parts = row.split("=")
-        if len(parts) != 2:
+        if len(parts) < 2:
             continue
 
-        alias, command = extract(parts[0]), extract(parts[1])
+        alias, command = extract(parts[0]), extract("=".join(parts[1:]))
 
         by_cmd[command] = alias
         by_alias[alias] = command

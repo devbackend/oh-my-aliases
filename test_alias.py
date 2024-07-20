@@ -8,20 +8,23 @@ class TestAliases(TestCase):
             "l='ls -lah'",
             "'md'=mkdir -p",
             "'gc!'='git commit --verbose --amend'",
+            "gotest='gotestsum --hide-summary=skipped --format=testname'"
         ]
 
         expected_by_cmd = {
-            "rmdir":                        "rd",
-            "ls -lah":                      "l",
-            "mkdir -p":                     "md",
-            "git commit --verbose --amend": "gc!",
+            "rmdir":                                               "rd",
+            "ls -lah":                                             "l",
+            "mkdir -p":                                            "md",
+            "git commit --verbose --amend":                        "gc!",
+            "gotestsum --hide-summary=skipped --format=testname": "gotest",
         }
 
         expected_by_alias = {
-            "rd":  "rmdir",
-            "l":   "ls -lah",
-            "md":  "mkdir -p",
-            "gc!": "git commit --verbose --amend",
+            "rd":     "rmdir",
+            "l":      "ls -lah",
+            "md":     "mkdir -p",
+            "gc!":    "git commit --verbose --amend",
+            "gotest": "gotestsum --hide-summary=skipped --format=testname",
         }
 
         actual_by_cmd, actual_by_alias = parse_aliases(rows)
