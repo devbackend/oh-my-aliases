@@ -17,15 +17,17 @@ def main():
     config_enable_debug = os.getenv("ZSH_PLUGINS_OH_MY_ALIASES_DEBUG", "0") == "1"
     config_suggestion_freq_percent = int(os.getenv("ZSH_PLUGINS_OH_MY_ALIASES_SUGGESTION_FREQUENCY_PERCENT", "10"))
 
-    d = Debug(config_enable_debug)
 
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 3:
         if config_enable_debug:
-            print(COLOR_DEBUG + "not found command in input" + COLOR_RESET)
+            print(COLOR_DEBUG + "not enough args" + COLOR_RESET)
         return
 
-    inp = sys.argv[1]
+    window_width = int(sys.argv[1].split("=").pop())
+    inp = sys.argv[2]
 
+    d = Debug(config_enable_debug, window_width, {"ea":config_expand_alias, "sa":config_suggest_alias, "h%": config_suggestion_freq_percent})
+    
     alias_rows, history_rows = stdin_rows()
     by_command, by_alias = parse_aliases(alias_rows)
 
@@ -46,7 +48,7 @@ def main():
 def print_key_value(key: str, value: str, d: Debug):
     msg = f"{COLOR_KEY}{key}: {COLOR_VALUE}{value}{COLOR_RESET}"
     if d.enabled:
-        msg = f"{msg} {COLOR_DEBUG}{d.get_info()}{COLOR_RESET}"
+        msg = f"{msg} {COLOR_DEBUG}{d.get_info(len(msg) - 15)}{COLOR_RESET}"
 
     print(msg)
 

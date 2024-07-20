@@ -6,10 +6,13 @@ _oh_my_aliases__fn () {
   local alias_list
   alias_list=$(alias)
 
+  local window_width
+  window_width=$(tput cols)
+
   local history
   history=$(history -200)
 
-  echo "$alias_list\n__oh_my_aliases__DELIMITER\n$history" | python3 ${__oh_my_aliases__PLUGIN_DIR}/oh-my-aliases.py $*
+  echo "$alias_list\n__oh_my_aliases__DELIMITER\n$history" | python3 ${__oh_my_aliases__PLUGIN_DIR}/oh-my-aliases.py --ww=$window_width $*
 }
 
 autoload -Uz add-zsh-hook
