@@ -37,7 +37,7 @@ def suggest_alias(cmd, freq, history):
 
     count = 1
     for row in history:
-        row = " ".join(" ".split(row.strip())[1:]).strip()
+        row = " ".join(row.strip().split()[1:]).strip()
         if row == cmd:
             count += 1
 

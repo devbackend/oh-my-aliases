@@ -1,5 +1,8 @@
 # Change Log
 
+## [v1.0.1]
+- fixed bug with splitting history
+
 ## [nightly-2024-0720]
 - fixed bug with parsing alias that has "="
 - improve output for debugging
